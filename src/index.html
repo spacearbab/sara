@@ -140,12 +140,11 @@ body.nx #notes,body.nx #ta{font-size:calc(var(--nf)*1.2)}
 .pt{position:absolute;will-change:transform,opacity}
 .fl{animation:fl var(--d,3s) ease-out forwards}
 @keyframes fl{from{transform:translate(0,0) scale(.6);opacity:1}to{transform:translate(var(--x,0),var(--y,-100vh)) scale(1.2);opacity:0}}
-#br,#hp{position:fixed;inset:0;z-index:56;display:grid;place-items:center;align-content:center;gap:22px;background:rgba(0,0,0,.58);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);opacity:0;pointer-events:none;transition:opacity .6s;text-align:center;padding:20px}
-#br.on,#hp.on{opacity:1;pointer-events:auto}
+#br{position:fixed;inset:0;z-index:56;display:grid;place-items:center;align-content:center;gap:22px;background:rgba(0,0,0,.58);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);opacity:0;pointer-events:none;transition:opacity .6s;text-align:center;padding:20px}
+#br.on{opacity:1;pointer-events:auto}
 #br i{width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,#ffe3c4,#ff8a1f 58%,transparent 72%);box-shadow:0 0 70px rgba(255,138,31,.65);animation:bth 6s ease-in-out infinite}
 @keyframes bth{50%{transform:scale(1.9)}}
 #br b{font-size:clamp(22px,4.2vw,36px)}#br small{color:var(--mu)}
-#hp .box{text-align:right;width:min(460px,100%)}#hp .box div{font-size:14px}
 kbd{background:rgba(255,255,255,.16);border-radius:7px;padding:1px 9px;margin-inline-end:8px;font:500 13px ui-monospace,Menlo,monospace;direction:ltr;display:inline-block}
 body[data-tr="1"] .cur img.in{animation:in1 .45s cubic-bezier(.2,.8,.2,1)}@keyframes in1{from{opacity:0;transform:translateX(70px)}}
 body[data-tr="2"] .cur img.in{animation:in2 .5s ease-out}@keyframes in2{from{opacity:0;transform:scale(1.2);filter:blur(12px)}}
@@ -154,6 +153,13 @@ body[data-tr="3"] .cur img.in{animation:in3 .65s ease-out}@keyframes in3{from{op
 #lz{position:fixed;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;background:radial-gradient(circle,#fff 0,#ff2d2d 40%,transparent 70%);box-shadow:0 0 18px 6px rgba(255,40,40,.75);opacity:0;transition:opacity .25s;pointer-events:none;z-index:57}
 #lz.on{opacity:1}body.lz .cur{cursor:crosshair}body.zm .cur{cursor:none}
 #mgl{position:fixed;display:none;width:220px;height:220px;margin:-110px 0 0 -110px;border-radius:50%;border:3px solid rgba(255,255,255,.75);box-shadow:0 10px 40px rgba(0,0,0,.6);background-repeat:no-repeat;pointer-events:none;z-index:57}
+#sc{position:fixed;inset:0;z-index:62;display:grid;place-items:center;padding:16px;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}#sc[hidden]{display:none}
+#sc .box{width:min(640px,100%);max-height:86vh;overflow:auto;text-align:right;gap:6px}
+#sc h3{margin:14px 0 4px;font-size:13px;color:var(--mu);font-weight:600}
+#sc .r{display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:14px}
+#sc .r:last-of-type{border-bottom:0}#sc .r span{color:var(--mu)}
+#sc kbd{margin-inline-end:4px;margin-block:2px}
+@media(max-width:560px){#sc .r{grid-template-columns:1fr;gap:2px}}
 #cp{position:fixed;inset:0;z-index:60;display:grid;place-items:start center;padding:12vh 16px;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 #cp .box{width:min(560px,100%);text-align:right}#cq{text-align:right;direction:rtl;font-size:16px}
 #cl{display:flex;flex-direction:column;gap:6px;max-height:50vh;overflow:auto}
@@ -187,8 +193,8 @@ body[data-tr="3"] .cur img.in{animation:in3 .65s ease-out}@keyframes in3{from{op
   </div>
   <button class="pill po" id="aw" title="باز کردن صفحه‌ی استریم برای پروژکتور (O)">صفحه استریم</button>
   <button class="pill go po" id="ex">پایان ارائه</button>
+  <button class="btn glass" id="sk" title="میان‌برها (H)" aria-label="میان‌برها">⌨️</button>
   <button class="btn glass" id="sr" title="جست‌وجو و پرش (K)" aria-label="جست‌وجو">🔍</button>
-  <button class="btn glass" id="mg" title="کلیدهای جادویی (H)" aria-label="کلیدهای جادویی">✨</button>
   <button class="btn glass" id="gb" title="فهرست اسلایدها (G)" aria-label="فهرست اسلایدها"><svg class="i"><use href="#s-gr"/></svg></button>
   <button class="btn glass" id="fs" title="تمام‌صفحه‌ی اسلاید (F)" aria-label="تمام‌صفحه"><svg class="i"><use href="#s-fs"/></svg></button>
  </header>
@@ -219,14 +225,33 @@ body[data-tr="3"] .cur img.in{animation:in3 .65s ease-out}@keyframes in3{from{op
   </aside>
  </main>
 </div>
-<div id="lock" hidden><form class="box glass" id="lf" autocomplete="off"><h2>PptxSARA Presentation</h2><p>سلام سارا ✨ آماده‌ی درخشیدن؟ رمز را وارد کن</p><input id="pw" type="password" inputmode="numeric" autocomplete="off" aria-label="رمز عبور"><div class="er" id="le"></div><button class="pill go" type="submit">ورود</button></form></div>
+<div id="lock" hidden><form class="box glass" id="lf" autocomplete="off"><h2>PptxSARA Presentation</h2><p>رمز را وارد کن</p><input id="pw" type="password" inputmode="numeric" autocomplete="off" aria-label="رمز عبور"><div class="er" id="le"></div><button class="pill go" type="submit">ورود</button></form></div>
 <div id="cfg" hidden><div class="box glass"><h2>اتصال به GitHub</h2><p>فقط یک‌بار برای هر دستگاه. یک توکن Fine-grained فقط برای همین مخزن با دسترسی <b>Contents: Read and write</b> بسازید (<a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" style="color:var(--ac)">ساخت توکن</a>).</p><input id="cr" placeholder="owner/repo" aria-label="مخزن"><input id="ct" type="password" placeholder="github_pat_…" aria-label="توکن"><div class="er" id="ce"></div><button class="pill go" id="cs">اتصال و ذخیره</button><button class="pill" id="cc">انصراف</button></div></div>
-<div id="fx" aria-hidden="true"></div>
 <div id="br"><i></i><b>نفس بکش، همه چیز آماده است 🌿</b><small>با بزرگ‌شدن دایره دم، با کوچک‌شدنش بازدم</small></div>
-<div id="hp"><div class="box glass"><h2>✨ کلیدهای جادویی</h2>
-<div><kbd>M</kbd> نفس عمیق و آرامش</div><div><kbd>L</kbd> بارش قلب</div><div><kbd>C</kbd> کنفتی جشن</div><div><kbd>E</kbd> بزرگ‌کردن یادداشت</div><div><kbd>۱ تا ۹</kbd> پرش مستقیم به اسلاید</div><div><kbd>P</kbd> پرزنتر · <kbd>O</kbd> صفحه استریم</div><div><kbd>B</kbd> صفحه‌ی سیاه · <kbd>F</kbd> تمام‌صفحه</div>
-<div><kbd>D</kbd> لیزر (روی صفحه‌ی استریم هم دیده می‌شود)</div><div><kbd>Z</kbd> ذره‌بین ۲٫۵×</div><div><kbd>T</kbd> تغییر افکت انتقال اسلاید</div><div><kbd>K</kbd> یا <kbd>/</kbd> جست‌وجوی سریع</div>
-<p>یک راز هم هست… ۵ بار روی اسم سایت بزن 😉</p></div></div>
+<div id="sc" hidden><div class="box glass"><h2>⌨️ میان‌برها</h2>
+<h3>ناوبری بین اسلایدها</h3>
+<div class="r"><div><kbd>→</kbd> <kbd>↓</kbd> <kbd>Space</kbd> <kbd>Enter</kbd> <kbd>PageDown</kbd></div><span>اسلاید بعدی</span></div>
+<div class="r"><div><kbd>←</kbd> <kbd>↑</kbd> <kbd>Backspace</kbd> <kbd>PageUp</kbd></div><span>اسلاید قبلی</span></div>
+<div class="r"><div><kbd>Home</kbd> <kbd>End</kbd></div><span>پرش به اسلاید اول / آخر</span></div>
+<div class="r"><div><kbd>۱ تا ۹</kbd></div><span>شماره‌ی اسلاید را تایپ کن (مثلاً ۷ یا ۱۲) تا مستقیم به آن بروی</span></div>
+<div class="r"><div><kbd>K</kbd> <kbd>/</kbd></div><span>جست‌وجوی سریع در شماره‌ی اسلاید و متن یادداشت‌ها</span></div>
+<div class="r"><div><kbd>G</kbd></div><span>باز و بسته کردن فهرست اسلایدها</span></div>
+<h3>حالت‌ها و نمایش</h3>
+<div class="r"><div><kbd>P</kbd></div><span>جابه‌جایی بین حالت عادی و پرزنتر</span></div>
+<div class="r"><div><kbd>O</kbd></div><span>باز کردن صفحه‌ی استریم برای پروژکتور</span></div>
+<div class="r"><div><kbd>F</kbd></div><span>تمام‌صفحه‌ی اسلاید</span></div>
+<div class="r"><div><kbd>B</kbd></div><span>صفحه‌ی سیاه؛ دوباره بزن تا برگردد</span></div>
+<div class="r"><div><kbd>M</kbd></div><span>دایره‌ی نفس برای آرام شدن (بعد از ۹ ثانیه خودکار بسته می‌شود)</span></div>
+<h3>ابزارهای ارائه</h3>
+<div class="r"><div><kbd>D</kbd></div><span>لیزر؛ روی صفحه‌ی استریم هم دیده می‌شود</span></div>
+<div class="r"><div><kbd>Z</kbd></div><span>ذره‌بین ۲٫۵× روی اسلاید</span></div>
+<div class="r"><div><kbd>T</kbd></div><span>تغییر افکت انتقال اسلاید (محو، لغزش، زوم و محو، چرخش سه‌بعدی)</span></div>
+<h3>یادداشت</h3>
+<div class="r"><div><kbd>E</kbd></div><span>بزرگ‌کردن یادداشت؛ با دکمه‌ها یا کلیدهای جهت‌دار می‌توانی اسلاید را عوض کنی</span></div>
+<h3>عمومی</h3>
+<div class="r"><div><kbd>Esc</kbd></div><span>بستن دایره‌ی نفس، یادداشت بزرگ، فهرست اسلایدها، پنجره‌ی جست‌وجو یا تمام‌صفحه</span></div>
+<div class="r"><div><kbd>H</kbd> <kbd>?</kbd></div><span>نمایش همین پنجره</span></div>
+<p style="margin-top:12px">میان‌برها با کیبورد فارسی هم کار می‌کنند. در صفحه‌ی استریم فقط کلید F فعال است.</p></div></div>
 <div id="cp" hidden><div class="box glass"><input id="cq" placeholder="شماره‌ی اسلاید یا کلمه‌ای از یادداشت‌ها…" aria-label="جست‌وجو"><div id="cl"></div></div></div>
 <div id="dr"><div class="p glass"><div id="grid"></div></div></div>
 <div id="toast" class="glass" role="status"></div>
@@ -251,7 +276,7 @@ async function hx(t){const b=await crypto.subtle.digest('SHA-256',new TextEncode
 if(ls('ok')==PH)boot();else{$('#app').hidden=true;$('#lock').hidden=false;$('#pw').focus()}
 $('#lf').onsubmit=async e=>{e.preventDefault();const pw=$('#pw').value.trim().replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));let h='';
  try{h=await hx('sara|'+pw)}catch(x){$('#le').textContent='برای ورود، سایت باید با https باز شود.';return}
- if(h==PH){ls('ok',PH);boot();setTimeout(()=>{toast('سلام سارا ✨ خوش اومدی',3800);burst(['✨','💛'],16,3.5)},700)}else{$('#le').textContent='رمز اشتباه است';const f=$('#lf');f.classList.remove('shake');void f.offsetWidth;f.classList.add('shake');$('#pw').value='';$('#pw').focus()}};
+ if(h==PH){ls('ok',PH);boot()}else{$('#le').textContent='رمز اشتباه است';const f=$('#lf');f.classList.remove('shake');void f.offsetWidth;f.classList.add('shake');$('#pw').value='';$('#pw').focus()}};
 function init(m){
  M=m;if(m.api)$('#gh').hidden=true;document.title=m.title;$('#ttl').textContent=m.title;
  document.documentElement.style.setProperty('--ar',m.w+'/'+m.h);
@@ -275,7 +300,6 @@ function go(i,quiet){
  $$('.th').forEach(e=>{const on=+e.dataset.i==n;e.classList.toggle('on',on);if(on&&e.closest('#rail'))e.scrollIntoView({block:'nearest',inline:'center'})});
  history.replaceState(null,'',location.search+'#'+n);new Image().src=SRC(Math.min(n+1,M.count));
  if(!quiet)send({t:'go',n});
- if(!quiet&&n==M.count&&n>1&&B.dataset.mode=='present')finale();
 }
 function showNotes(){const t=(N[n-1]||'').trim(),b=$('#notes');b.textContent=t||'برای این اسلاید یادداشتی ثبت نشده است.';b.classList.toggle('empty',!t);b.scrollTop=0}
 function setMode(m){B.dataset.mode=m;$$('[data-m]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m==m));
@@ -338,18 +362,9 @@ $('#prev').onclick=$('#p2').onclick=$('#p3').onclick=()=>go(n-1);$('#next').oncl
 function nx(v){B.classList.toggle('nx',v==null?!B.classList.contains('nx'):!!v);$('#xp use').setAttribute('href',B.classList.contains('nx')?'#s-x':'#s-xp')}
 $('#xp').onclick=()=>nx();
 /* ---- جلوه‌های ویژه (فقط برای پرزنتر؛ در صفحه‌ی استریم هیچ‌کدام نمایش داده نمی‌شود) ---- */
-const FINAL_MSG='سارا، عالی بودی! 💛 همه‌چیز را خوب و با دل گفتی.';   // پیام پایان ارائه، دلخواه عوضش کن
-const CHEER=['عالی پیش می‌ری 💛','یه لبخند بزن 😊','آروم و مطمئن، تو بلدی ✨','صدات رو دوست دارن 🌟','یه نفس عمیق، ادامه بده 🌿'];
-const fxl=$('#fx');let bt,lf=0,tc=0;
-function burst(l,n,d,dn){for(let i=0;i<n;i++){const e=document.createElement('span');e.className='pt fl';e.textContent=l[i%l.length];
- e.style.cssText=`left:${Math.random()*100}%;top:${dn?-8:100}%;font-size:${18+Math.random()*24}px;--x:${(Math.random()-.5)*200}px;--y:${dn?'':'-'}${105+Math.random()*10}vh;--d:${d*(.7+Math.random()*.6)}s;animation-delay:${Math.random()*.9}s`;
- fxl.appendChild(e);setTimeout(()=>e.remove(),(d*1.6+1.2)*1000)}}
+let bt;
 function breath(){const b=$('#br'),on=b.classList.contains('on');clearTimeout(bt);b.classList.toggle('on',!on);if(!on)bt=setTimeout(()=>b.classList.remove('on'),9000)}
-function finale(){if(Date.now()-lf<15000)return;lf=Date.now();burst(['🎉','✨','💛','🎊','⭐'],60,4.5,1);toast(FINAL_MSG,9000)}
-$('#br').onclick=$('#hp').onclick=e=>e.currentTarget.classList.remove('on');
-$('#mg').onclick=()=>$('#hp').classList.toggle('on');
-$('#ttl').onclick=()=>{if(++tc>=5){tc=0;burst(['💛','✨'],30,4);toast('🤫 راز: تو از چیزی که فکر می‌کنی قوی‌تری. فردا می‌درخشی!',7000)}};
-setInterval(()=>{if(B.dataset.mode=='present'&&M)toast(CHEER[Math.random()*CHEER.length|0])},24e4);
+$('#br').onclick=e=>e.currentTarget.classList.remove('on');
 /* ---- افکت‌های فنی و بصری ---- */
 // ۱) نور پس‌زمینه‌ای که از رنگ‌های اسلاید فعلی ساخته می‌شود
 const cv=document.createElement('canvas');cv.width=cv.height=8;const cx=cv.getContext('2d',{willReadFrequently:true});
@@ -382,6 +397,8 @@ const cpg=i=>{go(+i);$('#cp').hidden=true};
 $('#cq').oninput=cpr;$('#sr').onclick=cpo;
 $('#cl').onclick=e=>{const b=e.target.closest('button');if(b)cpg(b.dataset.i)};
 $('#cp').onclick=e=>{if(e.target.id=='cp')$('#cp').hidden=true};
+function sco(v){$('#sc').hidden=v==null?!$('#sc').hidden:!v}
+$('#sk').onclick=()=>sco();$('#sc').onclick=e=>{if(e.target.id=='sc')sco(0)};
 $('#cq').onkeydown=e=>{if(e.key=='Enter'){const b=$('#cl .sel');if(b)cpg(b.dataset.i)}else if(e.key=='Escape')$('#cp').hidden=true};
 $('#img').onclick=()=>B.dataset.mode=='view'&&go(n+1);
 $$('[data-m]').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
@@ -396,8 +413,8 @@ addEventListener('keydown',e=>{if(!M||e.ctrlKey||e.metaKey||e.altKey)return;cons
  else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(k)){e.preventDefault();go(n-1)}
  else if(k=='Home')go(1);else if(k=='End')go(M.count);
  else if(q=='e')nx();
- else if(q=='m')breath();else if(q=='d')lzr();else if(q=='z')zmt();else if(q=='t')trn();else if(q=='k'||k=='/'){e.preventDefault();cpo()}else if(q=='l')burst(['💛','❤️','🧡','💖'],26,4);else if(q=='c')burst(['🎉','✨','🎊','⭐'],50,4.5,1);else if(q=='h'||k=='?')$('#hp').classList.toggle('on');
- else if(k=='Escape'){if($('#br').classList.contains('on')||$('#hp').classList.contains('on')){$('#br').classList.remove('on');$('#hp').classList.remove('on')}else if(B.classList.contains('nx'))nx(0);else if($('#dr').classList.contains('open'))dr(0);else if(B.classList.contains('fs')&&B.dataset.mode!='audience')fs()}
+ else if(q=='m')breath();else if(q=='d')lzr();else if(q=='z')zmt();else if(q=='t')trn();else if(q=='k'||k=='/'){e.preventDefault();cpo()}else if(q=='h'||k=='?'||k=='؟'){e.preventDefault();sco()}
+ else if(k=='Escape'){if(!$('#sc').hidden)sco(0);else if($('#br').classList.contains('on')){$('#br').classList.remove('on')}else if(B.classList.contains('nx'))nx(0);else if($('#dr').classList.contains('open'))dr(0);else if(B.classList.contains('fs')&&B.dataset.mode!='audience')fs()}
  else if(q=='f')fs();else if(q=='g')dr();else if(q=='b')blank();else if(q=='o')aw();
  else if(q=='p'&&B.dataset.mode!='audience')setMode(B.dataset.mode=='present'?'view':'present')});
 let sx,sy;
