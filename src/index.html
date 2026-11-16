@@ -94,7 +94,7 @@ body.blank .cur{background:#000}
 body.fs .dock{display:none}
 [data-mode=audience] #app{padding:0;gap:0}
 [data-mode=audience] .top,[data-mode=audience] .rail,[data-mode=audience] .nbx,[data-mode=audience] .dock,[data-mode=audience] .bg,[data-mode=audience] #p2,[data-mode=audience] #n2,[data-mode=audience] #c2{display:none}
-[data-mode=audience] .cur img{pointer-events:none}
+[data-mode=audience] .cur img{pointer-events:none}[data-mode=audience] .ov{display:none!important}
 #lock,#cfg{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:20px;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .box{width:min(400px,100%);padding:26px;display:flex;flex-direction:column;gap:12px;text-align:center}
 .box h2{margin:0;font-size:20px}.box p{margin:0;color:var(--mu);font-size:13px}
@@ -178,6 +178,8 @@ body[data-tr="3"] .cur img.in{animation:in3 .65s ease-out}@keyframes in3{from{op
 <symbol id="s-pl" viewBox="0 0 24 24"><path d="M7 4l12 8-12 8z"/></symbol>
 <symbol id="s-pa" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
 <symbol id="s-rs" viewBox="0 0 24 24"><path d="M3 12a9 9 0 103-6.7M3 4v5h5"/></symbol>
+<symbol id="s-sr" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></symbol>
+<symbol id="s-kb" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="3"/><path d="M6.5 10h.01M10 10h.01M14 10h.01M17.5 10h.01M7.5 14h9"/></symbol>
 <symbol id="s-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
 <symbol id="s-ex" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/></symbol>
 <symbol id="s-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 9.5V20h5v-6h4v6h5V9.5"/></symbol>
@@ -193,8 +195,8 @@ body[data-tr="3"] .cur img.in{animation:in3 .65s ease-out}@keyframes in3{from{op
   </div>
   <button class="pill po" id="aw" title="باز کردن صفحه‌ی استریم برای پروژکتور (O)">صفحه استریم</button>
   <button class="pill go po" id="ex">پایان ارائه</button>
-  <button class="btn glass" id="sk" title="میان‌برها (H)" aria-label="میان‌برها">⌨️</button>
-  <button class="btn glass" id="sr" title="جست‌وجو و پرش (K)" aria-label="جست‌وجو">🔍</button>
+  <button class="btn glass" id="sk" title="میان‌برها (H)" aria-label="میان‌برها"><svg class="i"><use href="#s-kb"/></svg></button>
+  <button class="btn glass" id="sr" title="جست‌وجو و پرش (K)" aria-label="جست‌وجو"><svg class="i"><use href="#s-sr"/></svg></button>
   <button class="btn glass" id="gb" title="فهرست اسلایدها (G)" aria-label="فهرست اسلایدها"><svg class="i"><use href="#s-gr"/></svg></button>
   <button class="btn glass" id="fs" title="تمام‌صفحه‌ی اسلاید (F)" aria-label="تمام‌صفحه"><svg class="i"><use href="#s-fs"/></svg></button>
  </header>
@@ -228,7 +230,7 @@ body[data-tr="3"] .cur img.in{animation:in3 .65s ease-out}@keyframes in3{from{op
 <div id="lock" hidden><form class="box glass" id="lf" autocomplete="off"><h2>PptxSARA Presentation</h2><p>رمز را وارد کن</p><input id="pw" type="password" inputmode="numeric" autocomplete="off" aria-label="رمز عبور"><div class="er" id="le"></div><button class="pill go" type="submit">ورود</button></form></div>
 <div id="cfg" hidden><div class="box glass"><h2>اتصال به GitHub</h2><p>فقط یک‌بار برای هر دستگاه. یک توکن Fine-grained فقط برای همین مخزن با دسترسی <b>Contents: Read and write</b> بسازید (<a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" style="color:var(--ac)">ساخت توکن</a>).</p><input id="cr" placeholder="owner/repo" aria-label="مخزن"><input id="ct" type="password" placeholder="github_pat_…" aria-label="توکن"><div class="er" id="ce"></div><button class="pill go" id="cs">اتصال و ذخیره</button><button class="pill" id="cc">انصراف</button></div></div>
 <div id="br"><i></i><b>نفس بکش، همه چیز آماده است 🌿</b><small>با بزرگ‌شدن دایره دم، با کوچک‌شدنش بازدم</small></div>
-<div id="sc" hidden><div class="box glass"><h2>⌨️ میان‌برها</h2>
+<div id="sc" hidden><div class="box glass"><h2>میان‌برها</h2>
 <h3>ناوبری بین اسلایدها</h3>
 <div class="r"><div><kbd>→</kbd> <kbd>↓</kbd> <kbd>Space</kbd> <kbd>Enter</kbd> <kbd>PageDown</kbd></div><span>اسلاید بعدی</span></div>
 <div class="r"><div><kbd>←</kbd> <kbd>↑</kbd> <kbd>Backspace</kbd> <kbd>PageUp</kbd></div><span>اسلاید قبلی</span></div>
@@ -375,10 +377,10 @@ $('#img').onload=ambient;
 // ۲) لیزر هماهنگ با صفحه‌ی استریم
 let lz=0,lzt;const lzE=document.createElement('div');lzE.id='lz';document.body.appendChild(lzE);
 function ptr(x,y){const r=$('#img').getBoundingClientRect();lzE.style.left=r.left+x*r.width+'px';lzE.style.top=r.top+y*r.height+'px';lzE.classList.add('on');clearTimeout(lzt);lzt=setTimeout(()=>lzE.classList.remove('on'),1800)}
-function lzr(){lz=!lz;B.classList.toggle('lz',lz);B.classList.remove('zm');mgE.style.display='none';toast(lz?'🔴 لیزر روشن؛ ماوس را روی اسلاید حرکت بده':'لیزر خاموش',2200)}
+function lzr(){lz=!lz;B.classList.toggle('lz',lz);B.classList.remove('zm');mgE.style.display='none';toast(lz?'لیزر روشن؛ ماوس را روی اسلاید حرکت بده':'لیزر خاموش',2200)}
 // ۳) ذره‌بین
 const mgE=document.createElement('div');mgE.id='mgl';document.body.appendChild(mgE);
-function zmt(){B.classList.toggle('zm');lz=0;B.classList.remove('lz');mgE.style.display='none';toast(B.classList.contains('zm')?'🔍 ذره‌بین ۲٫۵× روشن':'ذره‌بین خاموش',2000)}
+function zmt(){B.classList.toggle('zm');lz=0;B.classList.remove('lz');mgE.style.display='none';toast(B.classList.contains('zm')?'ذره‌بین ۲٫۵× روشن':'ذره‌بین خاموش',2000)}
 function mag(e){const im=$('#img'),r=im.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom){mgE.style.display='none';return}
  const z=2.5,x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;Object.assign(mgE.style,{display:'block',left:e.clientX+'px',top:e.clientY+'px',backgroundImage:`url(${im.src})`,backgroundSize:`${r.width*z}px ${r.height*z}px`,backgroundPosition:`${110-x*r.width*z}px ${110-y*r.height*z}px`})}
 // ۴) انتقال‌های سینمایی و تیلت سه‌بعدی
@@ -391,7 +393,7 @@ $('#cur').addEventListener('pointermove',e=>{const im=$('#img'),r=im.getBounding
 $('#cur').addEventListener('pointerleave',()=>{$('#img').style.transform='';mgE.style.display='none'});
 // ۵) جست‌وجوی سریع
 function cpr(){const q=$('#cq').value.trim().toLowerCase(),L=[];for(let i=1;i<=M.count;i++){const t=N[i-1]||'';if(!q||String(i)==q||t.toLowerCase().includes(q))L.push(i)}
- $('#cl').innerHTML=L.slice(0,8).map((i,j)=>`<button data-i="${i}" class="${j?'':'sel'}"><img src="${SRC(i)}" alt=""><span>${fa(i)} · ${(N[i-1]||'').replace(/\s+/g,' ').slice(0,70)}</span></button>`).join('')||'<p>نتیجه‌ای پیدا نشد</p>'}
+ $('#cl').innerHTML=L.map((i,j)=>`<button data-i="${i}" class="${j?'':'sel'}"><img loading="lazy" src="${SRC(i)}" alt=""><span>${fa(i)} · ${(N[i-1]||'').replace(/\s+/g,' ').slice(0,70)}</span></button>`).join('')||'<p>نتیجه‌ای پیدا نشد</p>'}
 function cpo(){$('#cp').hidden=false;$('#cq').value='';cpr();$('#cq').focus()}
 const cpg=i=>{go(+i);$('#cp').hidden=true};
 $('#cq').oninput=cpr;$('#sr').onclick=cpo;
