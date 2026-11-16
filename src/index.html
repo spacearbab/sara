@@ -6,166 +6,274 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root{--gb:rgba(255,255,255,.22);--tx:#fff;--mu:#b9b9b9;--ac:#ff8a1f;--ar:16/9;color-scheme:dark}
+:root{--gb:rgba(255,255,255,.22);--tx:#fff;--mu:#b9b9b9;--ac:#ff8a1f;--ar:16/9;--nf:28px;color-scheme:dark}
 [hidden]{display:none!important}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;margin:0}
 body{font:15px/1.7 Vazirmatn,system-ui,-apple-system,sans-serif;color:var(--tx);background:#000;overflow:hidden;overscroll-behavior:none}
-.bg{position:fixed;inset:0;z-index:-1;overflow:hidden}
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;transition:opacity .5s}
 .bg i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:f 24s ease-in-out infinite alternate}
 .bg i:nth-child(1){width:55vmax;height:55vmax;background:#ff7a00;top:-18vmax;right:-12vmax}
 .bg i:nth-child(2){width:46vmax;height:46vmax;background:#ff5a00;bottom:-18vmax;left:-12vmax;animation-delay:-9s}
 .bg i:nth-child(3){width:30vmax;height:30vmax;background:#fff;top:38%;left:34%;opacity:.07;animation-delay:-15s}
 @keyframes f{to{transform:translate(7vmax,-5vmax) scale(1.15)}}
+[data-mode=present] .bg{opacity:.2}
 .glass{background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.05));border:1px solid var(--gb);backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);box-shadow:0 10px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.4),inset 0 -1px 0 rgba(255,255,255,.08);border-radius:24px}
 button{font:inherit;color:inherit;cursor:pointer;border:0;transition:transform .2s,filter .2s,opacity .2s,background .25s}
-button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+button:focus-visible,textarea:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
 .btn{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;flex:none}
 .btn:hover:not(:disabled){filter:brightness(1.3);transform:translateY(-1px)}
 .btn:active:not(:disabled){transform:scale(.92)}
 .btn:disabled{opacity:.35;cursor:default}
+.sm{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);display:grid;place-items:center;flex:none;font-size:13px}
+.sm:hover{background:rgba(255,255,255,.22)}
+.pill{padding:4px 14px;min-height:36px;border-radius:999px;background:rgba(255,255,255,.12);font-size:13px;white-space:nowrap}
+.pill.go{background:linear-gradient(135deg,rgba(255,138,31,.9),rgba(255,98,0,.7))}
 .i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-#app{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:12px;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+.sm .i{width:18px;height:18px}
+#app{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr);gap:12px;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
 .top{display:flex;align-items:center;gap:10px;padding:8px 16px}
 #ttl{flex:1;min-width:0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#clk{display:none;font:500 17px/1 ui-monospace,Menlo,monospace;color:var(--mu);direction:ltr}
+.po{display:none}
+[data-mode=present] #clk{display:block}[data-mode=present] .po{display:inline-block}
 .seg{display:flex;padding:3px;gap:2px;border-radius:999px;background:rgba(0,0,0,.28)}
 .seg button{padding:4px 14px;min-height:38px;border-radius:999px;background:none;color:var(--mu)}
 .seg button[aria-pressed=true]{color:#fff;background:linear-gradient(135deg,rgba(255,138,31,.9),rgba(255,98,0,.7));box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 4px 14px rgba(255,122,0,.45)}
-#stage{min-height:0;display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
-.cur{display:flex;align-items:center;justify-content:center;min-height:0;min-width:0}
+/* ---- چینش ---- */
+#stage{min-height:0;display:grid;gap:12px;grid-template-columns:170px minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(130px,27%);grid-template-areas:"rail col" "rail nbx"}
+.rail{grid-area:rail;display:flex;flex-direction:column;gap:10px;padding:10px;overflow:auto;min-height:0;overscroll-behavior:contain}
+.col{grid-area:col;min-height:0;min-width:0;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:10px}
+.nbx{grid-area:nbx;min-height:0;padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.cur{position:relative;display:flex;align-items:center;justify-content:center;min-height:0;min-width:0}
 .cur img{max-width:100%;max-height:100%;width:auto;height:auto;aspect-ratio:var(--ar);border-radius:16px;border:1px solid var(--gb);box-shadow:0 24px 70px rgba(0,0,0,.55);background:#fff;user-select:none;-webkit-user-drag:none}
 .cur img.in{animation:in .35s ease-out}
 @keyframes in{from{opacity:.2;transform:scale(.985)}}
-.side{display:none;min-height:0;flex-direction:column;gap:12px}
-[data-mode=present] #stage{grid-template-columns:minmax(0,1.7fr) minmax(300px,1fr)}
-[data-mode=present] .side{display:flex}
-.pn{padding:12px 14px}
-.next{display:flex;flex-direction:column;gap:8px;color:var(--mu);font-size:13px}
-.next img,#end{width:100%;aspect-ratio:var(--ar);border-radius:10px;object-fit:contain;background:#fff}
-#end{display:grid;place-items:center;background:rgba(0,0,0,.35);color:var(--mu)}
-.nb{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px}
-#notes{flex:1;overflow:auto;white-space:pre-wrap;font-size:var(--nf,20px);line-height:1.9;overscroll-behavior:contain}
-#notes.empty{color:var(--mu);font-size:14px}
-.tl{display:flex;align-items:center;gap:8px;color:var(--mu);font-size:13px}
-#tm{margin-inline-end:auto;font:500 18px/1 ui-monospace,Menlo,monospace;color:var(--tx);background:none;padding:6px;direction:ltr}
-.sm{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.1)}
-.dock{display:flex;align-items:center;gap:12px;padding:10px 14px;justify-self:center;width:min(620px,100%);direction:ltr}
+.th{position:relative;padding:0;border-radius:12px;overflow:hidden;background:#000;border:2px solid transparent;aspect-ratio:var(--ar);flex:none}
+.th:hover{transform:scale(1.03)}
+.th img{width:100%;height:100%;object-fit:cover;display:block}
+.th span{position:absolute;bottom:5px;inset-inline-start:5px;padding:0 8px;font-size:12px;border-radius:8px;background:rgba(0,0,0,.6)}
+.th.on{border-color:var(--ac);box-shadow:0 0 14px rgba(255,138,31,.55)}
+.rail .th{width:100%}
+/* نوار پایین */
+.dock{display:flex;align-items:center;gap:12px;padding:8px 14px;justify-self:center;width:min(620px,100%);direction:ltr}
 .mid{flex:1;text-align:center;font-weight:500;font-size:14px}
 .trk{height:5px;border-radius:9px;background:rgba(255,255,255,.18);margin-top:6px;overflow:hidden}
 #bar{height:100%;width:0;border-radius:9px;background:linear-gradient(90deg,#ff8a1f,#ffd0a0);transition:width .35s}
-#dr{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .3s}
+.tg{display:none;align-items:center;gap:8px}
+#tm{font:500 18px/1 ui-monospace,Menlo,monospace;min-width:76px;text-align:center}
+[data-mode=present] .tg{display:flex}
+/* یادداشت */
+.tl{display:flex;align-items:center;gap:8px;color:var(--mu);font-size:13px}
+.tl b{margin-inline-end:auto;font-weight:500}
+#notes,#ta{flex:1;min-height:0;overflow:auto;font:inherit;font-size:calc(var(--nf)*.8);line-height:1.95;overscroll-behavior:contain}
+#notes{white-space:pre-wrap}
+#notes.empty{color:var(--mu);font-size:15px}
+#ta{display:none;width:100%;resize:none;color:var(--tx);background:rgba(0,0,0,.35);border:1px solid var(--gb);border-radius:14px;padding:10px 12px}
+.ea{display:none}
+body.editing #notes{display:none}body.editing #ta{display:block}body.editing .ea{display:inline-block}body.editing .ne{display:none}
+/* حالت ارائه‌دهنده */
+[data-mode=present] #stage{direction:ltr;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) 108px;grid-template-areas:"col nbx" "rail rail"}
+[data-mode=present] .rail{flex-direction:row;overflow:auto hidden}
+[data-mode=present] .rail .th{width:auto;height:100%}
+[data-mode=present] .dock{width:100%}
+[data-mode=present] .nbx{direction:rtl}
+[data-mode=present] #notes,[data-mode=present] #ta{font-size:var(--nf)}
+[data-mode=present] .tl{direction:rtl}
+/* تمام‌صفحه‌ی اسلاید (فقط پاورپوینت) */
+.ov{display:none;position:absolute;bottom:18px;left:50%;transform:translateX(-50%);align-items:center;gap:10px;padding:8px 10px;direction:ltr;opacity:0;pointer-events:none;transition:opacity .3s;z-index:5;font-weight:500;font-size:14px;border-radius:999px}
+body.fs .ov{display:flex}body.fs.ui .ov{opacity:1;pointer-events:auto}
+body.fs .col{position:fixed;inset:0;z-index:30;background:#000;display:block}
+body.fs .cur{height:100%}
+body.fs .cur img{border:0;border-radius:0;box-shadow:none;background:#000}
+body.fs:not(.ui){cursor:none}
+body.blank .cur img{visibility:hidden}
+body.blank .cur{background:#000}
+body.fs .dock{display:none}
+[data-mode=audience] #app{padding:0;gap:0}
+[data-mode=audience] .top,[data-mode=audience] .rail,[data-mode=audience] .nbx,[data-mode=audience] .dock,[data-mode=audience] .bg{display:none}
+/* پنل فهرست */
+#dr{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .3s}
 #dr.open{opacity:1;pointer-events:auto}
 #dr .p{width:min(1000px,94vw);max-height:84vh;overflow:auto;padding:16px;transform:scale(.96);transition:transform .3s}
 #dr.open .p{transform:none}
 #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
-.th{position:relative;padding:0;border-radius:12px;overflow:hidden;background:#000;border:2px solid transparent;aspect-ratio:var(--ar)}
-.th:hover{transform:scale(1.03)}
-.th img{width:100%;height:100%;object-fit:cover;display:block}
-.th span{position:absolute;bottom:6px;inset-inline-start:6px;padding:0 8px;font-size:12px;border-radius:8px;background:rgba(0,0,0,.55)}
-.th.on{border-color:var(--ac)}
 #err{position:fixed;inset:0;display:grid;place-items:center;padding:20px}
 #err div{max-width:460px;padding:28px;text-align:center}
-body.immersive #app{padding:0;gap:0}
-body.immersive .cur img{border:0;border-radius:0;box-shadow:none}
-body.immersive:not([data-mode=present]) .cur img{background:#000}
-body.immersive .top,body.immersive .dock{position:fixed;z-index:10;opacity:0;pointer-events:none;transition:opacity .3s}
-body.immersive .top{top:max(10px,env(safe-area-inset-top));inset-inline:12px}
-body.immersive .dock{bottom:max(10px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(620px,94vw)}
-body.immersive.ui .top,body.immersive.ui .dock{opacity:1;pointer-events:auto}
-body.immersive:not(.ui){cursor:none}
+#toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,20px);z-index:60;padding:10px 20px;opacity:0;pointer-events:none;transition:.3s;max-width:90vw;text-align:center;font-size:14px}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+/* موبایل عمودی */
 @media(max-width:860px) and (orientation:portrait){
- [data-mode=present] #stage{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,34%) minmax(0,1fr)}
- .next{flex-direction:row;align-items:center}.next img,#end{width:38%}
- .seg button{padding:4px 10px;font-size:13px}.top{padding:8px 10px}
+ #stage,[data-mode=present] #stage{direction:rtl;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"col" "nbx"}
+ [data-mode=present] #stage{grid-template-rows:auto minmax(0,1fr) 74px;grid-template-areas:"col" "nbx" "rail"}
+ .rail{display:none}[data-mode=present] .rail{display:flex}
+ .col{grid-template-rows:auto auto}
+ .cur img{width:100%;height:auto;max-height:none}
+ .seg button{padding:4px 10px;font-size:13px}.top{padding:8px 10px;gap:6px}
+ .btn{width:42px;height:42px}.dock{gap:8px;padding:6px 10px}
+ [data-mode=present] .dock{flex-wrap:wrap}[data-mode=present] .mid{order:-1;flex-basis:100%}
+ #ttl{display:none}[data-mode=present] #ttl{display:none}
 }
-@media(max-height:520px){.top{padding:4px 12px}.btn{width:40px;height:40px}}
+/* موبایل افقی / صفحه‌ی کوتاه */
+@media(max-height:520px){
+ .top{padding:4px 12px}.btn{width:40px;height:40px}
+ [data-mode=view] .rail,[data-mode=view] .nbx{display:none}
+ [data-mode=view] #stage{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);grid-template-areas:"col"}
+ [data-mode=present] #stage{grid-template-rows:minmax(0,1fr) 70px}
+ [data-mode=present] #notes,[data-mode=present] #ta{font-size:calc(var(--nf)*.75)}
+}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head>
 <body data-mode="view">
 <div class="bg"><i></i><i></i><i></i></div>
 <svg width="0" height="0" style="position:absolute"><defs>
-<symbol id="pv" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
-<symbol id="nx" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
-<symbol id="gr" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></symbol>
-<symbol id="fs" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+<symbol id="s-pv" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="s-nx" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+<symbol id="s-gr" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></symbol>
+<symbol id="s-fs" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+<symbol id="s-ed" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></symbol>
+<symbol id="s-pl" viewBox="0 0 24 24"><path d="M7 4l12 8-12 8z"/></symbol>
+<symbol id="s-pa" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+<symbol id="s-rs" viewBox="0 0 24 24"><path d="M3 12a9 9 0 103-6.7M3 4v5h5"/></symbol>
+<symbol id="s-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="s-ex" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/></symbol>
 </defs></svg>
 <div id="app">
  <header class="top glass">
+  <span id="clk"></span>
   <b id="ttl"></b>
   <div class="seg" role="group" aria-label="حالت نمایش">
    <button data-m="view" aria-pressed="true">نمایش</button>
    <button data-m="present" aria-pressed="false">ارائه‌دهنده</button>
   </div>
-  <button class="btn glass" id="gb" title="فهرست اسلایدها (G)" aria-label="فهرست اسلایدها"><svg class="i"><use href="#gr"/></svg></button>
-  <button class="btn glass" id="fs" title="تمام‌صفحه (F)" aria-label="تمام‌صفحه"><svg class="i"><use href="#fs"/></svg></button>
+  <button class="pill po" id="aw" title="باز کردن پنجره‌ی نمایش برای پروژکتور (O)">پنجره‌ی نمایش</button>
+  <button class="pill go po" id="ex">پایان ارائه</button>
+  <button class="btn glass" id="gb" title="فهرست اسلایدها (G)" aria-label="فهرست اسلایدها"><svg class="i"><use href="#s-gr"/></svg></button>
+  <button class="btn glass" id="fs" title="تمام‌صفحه‌ی اسلاید (F)" aria-label="تمام‌صفحه"><svg class="i"><use href="#s-fs"/></svg></button>
  </header>
  <main id="stage">
-  <div class="cur"><img id="cur" alt="اسلاید فعلی" draggable="false"></div>
-  <aside class="side">
-   <div class="pn glass next"><span>اسلاید بعدی</span><img id="nxt" alt="اسلاید بعدی"><div id="end" hidden>پایان ارائه</div></div>
-   <div class="pn glass nb">
-    <div class="tl"><button id="tm" title="بازنشانی زمان‌سنج">00:00:00</button><span>یادداشت‌ها</span>
-     <button class="sm" id="fm" aria-label="کوچک‌تر">A-</button><button class="sm" id="fp" aria-label="بزرگ‌تر">A+</button></div>
-    <div id="notes" dir="auto"></div>
+  <nav class="rail glass" id="rail" aria-label="اسلایدها"></nav>
+  <section class="col">
+   <div class="cur" id="cur">
+    <img id="img" alt="اسلاید فعلی" draggable="false">
+    <div class="ov glass"><button class="sm" id="p2" aria-label="قبلی"><svg class="i"><use href="#s-pv"/></svg></button><span id="c2"></span><button class="sm" id="n2" aria-label="بعدی"><svg class="i"><use href="#s-nx"/></svg></button><button class="sm" id="x2" aria-label="خروج از تمام‌صفحه"><svg class="i"><use href="#s-x"/></svg></button></div>
    </div>
+   <footer class="dock glass">
+    <button class="btn glass" id="prev" aria-label="اسلاید قبلی"><svg class="i"><use href="#s-pv"/></svg></button>
+    <div class="tg"><button class="sm" id="tp" aria-label="شروع/توقف زمان‌سنج"><svg class="i"><use href="#s-pl"/></svg></button><button class="sm" id="tr" aria-label="بازنشانی زمان‌سنج"><svg class="i"><use href="#s-rs"/></svg></button><span id="tm">00:00:00</span></div>
+    <div class="mid"><span id="cnt"></span><div class="trk"><div id="bar"></div></div></div>
+    <button class="btn glass" id="next" aria-label="اسلاید بعدی"><svg class="i"><use href="#s-nx"/></svg></button>
+   </footer>
+  </section>
+  <aside class="nbx glass">
+   <div class="tl"><b>یادداشت‌های اسپیکر</b>
+    <button class="sm ne" id="gh" title="اتصال به GitHub برای ذخیره‌ی دائمی" aria-label="تنظیم GitHub">⚙</button>
+    <button class="sm ne" id="ed" title="ویرایش یادداشت" aria-label="ویرایش یادداشت"><svg class="i"><use href="#s-ed"/></svg></button>
+    <button class="pill go ea" id="sv">ذخیره</button><button class="pill ea" id="cn">انصراف</button>
+    <button class="sm" id="fm" aria-label="کوچک‌تر">A-</button><button class="sm" id="fp" aria-label="بزرگ‌تر">A+</button></div>
+   <div id="notes" dir="auto"></div>
+   <textarea id="ta" dir="auto" aria-label="متن یادداشت"></textarea>
   </aside>
  </main>
- <footer class="dock glass">
-  <button class="btn glass" id="prev" aria-label="اسلاید قبلی"><svg class="i"><use href="#pv"/></svg></button>
-  <div class="mid"><span id="cnt"></span><div class="trk"><div id="bar"></div></div></div>
-  <button class="btn glass" id="next" aria-label="اسلاید بعدی"><svg class="i"><use href="#nx"/></svg></button>
- </footer>
 </div>
 <div id="dr"><div class="p glass"><div id="grid"></div></div></div>
+<div id="toast" class="glass" role="status"></div>
 <div id="err" hidden><div class="glass"><h2>ارائه پیدا نشد</h2><p>فایل .pptx را در پوشه <code>presentation/</code> قرار دهید و Push کنید تا GitHub Actions اسلایدها را بسازد.</p></div></div>
 <script>
-const $=s=>document.querySelector(s),B=document.body,fa=x=>Number(x).toLocaleString('fa-IR');
-let M,n=1,t0=0,nf=+(localStorage.getItem('nf')||20);
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],B=document.body,fa=x=>Number(x).toLocaleString('fa-IR');
+const ls=(k,v)=>{try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){return null}};
+let M,n=1,N=[],ov={},run=0,el=0,st=0,wl,tt,nf=+ls('nf2')||28;
+const ID=Math.random().toString(36).slice(2),CH='deck-sync',bc=window.BroadcastChannel?new BroadcastChannel(CH):null;
 const cl=i=>Math.max(1,Math.min(M.count,i|0));
+const toast=t=>{const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),4200)};
+/* ---- هماهنگی بین پنجره‌ها ---- */
+const send=m=>{m.id=ID;bc?bc.postMessage(m):ls(CH,JSON.stringify({...m,r:Math.random()}))};
+function recv(m){if(!M||m.id==ID)return;
+ if(m.t=='go')go(m.n,1);else if(m.t=='blank')blank(m.v,1);
+ else if(m.t=='ask'&&B.dataset.mode!='audience'){send({t:'go',n});send({t:'blank',v:B.classList.contains('blank')})}}
+bc?bc.onmessage=e=>recv(e.data):addEventListener('storage',e=>{if(e.key==CH&&e.newValue)recv(JSON.parse(e.newValue))});
+/* ---- شروع ---- */
 fetch('slides/manifest.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw 0;return r.json()}).then(init).catch(()=>{$('#err').hidden=false;$('#app').hidden=true});
 function init(m){
  M=m;document.title=m.title;$('#ttl').textContent=m.title;
  document.documentElement.style.setProperty('--ar',m.w+'/'+m.h);
- $('#grid').innerHTML=Array.from({length:m.count},(_,i)=>`<button class="th" data-i="${i+1}"><img loading="lazy" src="slides/${i+1}.jpg" alt=""><span>${fa(i+1)}</span></button>`).join('');
- document.querySelectorAll('.th').forEach(b=>b.onclick=()=>{go(+b.dataset.i);dr(0)});
- sz(0);setMode(new URLSearchParams(location.search).get('mode')=='present'?'present':'view');go(parseInt(location.hash.slice(1))||1);
+ try{ov=JSON.parse(ls('ov:'+m.title)||'{}')}catch(e){ov={}}
+ for(const k in ov)if((m.notes[k-1]||'')==ov[k])delete ov[k];   // سرور به‌روز شده است
+ N=m.notes.map((t,i)=>ov[i+1]??t);
+ const h=Array.from({length:m.count},(_,i)=>`<button class="th" data-i="${i+1}"><img loading="lazy" src="slides/${i+1}.jpg" alt=""><span>${fa(i+1)}</span></button>`).join('');
+ $('#rail').innerHTML=h;$('#grid').innerHTML=h;
+ $$('.th').forEach(b=>b.onclick=()=>{go(+b.dataset.i);dr(0)});
+ sz(0);const md=new URLSearchParams(location.search).get('mode');
+ setMode(md=='present'||md=='audience'?md:'view');
+ go(parseInt(location.hash.slice(1))||1,1);send({t:'ask'});setInterval(tick,1000);tick();
 }
-function go(i){
- if(!M)return;n=cl(i);const c=$('#cur');c.src=`slides/${n}.jpg`;c.classList.remove('in');void c.offsetWidth;c.classList.add('in');
- const x=$('#nxt'),last=n==M.count;x.hidden=last;$('#end').hidden=!last;if(!last)x.src=`slides/${n+1}.jpg`;
- const t=(M.notes[n-1]||'').trim(),nb=$('#notes');nb.textContent=t||'برای این اسلاید یادداشتی ثبت نشده است.';nb.classList.toggle('empty',!t);nb.scrollTop=0;
- $('#cnt').textContent=fa(n)+' / '+fa(M.count);$('#bar').style.width=n/M.count*100+'%';
- $('#prev').disabled=n==1;$('#next').disabled=last;
- document.querySelectorAll('.th').forEach(e=>e.classList.toggle('on',+e.dataset.i==n));
- history.replaceState(null,'','#'+n);new Image().src=`slides/${Math.min(n+1,M.count)}.jpg`;
+function go(i,quiet){
+ if(!M)return;n=cl(i);const c=$('#img');c.src=`slides/${n}.jpg`;c.classList.remove('in');void c.offsetWidth;c.classList.add('in');
+ if(!$('body.editing'))showNotes();else edit(0);
+ $('#cnt').textContent=$('#c2').textContent=fa(n)+' / '+fa(M.count);$('#bar').style.width=n/M.count*100+'%';
+ $('#prev').disabled=$('#p2').disabled=n==1;$('#next').disabled=$('#n2').disabled=n==M.count;
+ $$('.th').forEach(e=>{const on=+e.dataset.i==n;e.classList.toggle('on',on);if(on&&e.closest('#rail'))e.scrollIntoView({block:'nearest',inline:'center'})});
+ history.replaceState(null,'',location.search+'#'+n);new Image().src=`slides/${Math.min(n+1,M.count)}.jpg`;
+ if(!quiet)send({t:'go',n});
 }
-function setMode(m){B.dataset.mode=m;document.querySelectorAll('[data-m]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m==m));
- if(m=='present'&&!t0){t0=Date.now();setInterval(tick,1000)}}
-function tick(){const s=(Date.now()-t0)/1000|0;$('#tm').textContent=[s/3600|0,s/60%60|0,s%60].map(v=>String(v).padStart(2,'0')).join(':')}
-function sz(d){nf=Math.max(14,Math.min(48,nf+d));document.documentElement.style.setProperty('--nf',nf+'px');try{localStorage.setItem('nf',nf)}catch(e){}}
+function showNotes(){const t=(N[n-1]||'').trim(),b=$('#notes');b.textContent=t||'برای این اسلاید یادداشتی ثبت نشده است.';b.classList.toggle('empty',!t);b.scrollTop=0}
+function setMode(m){B.dataset.mode=m;$$('[data-m]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m==m));
+ B.classList.toggle('fs',m=='audience');if(m!='audience'&&!inFS())B.classList.remove('fs');
+ history.replaceState(null,'',(m=='view'?'':'?mode='+m)+'#'+n);
+ if(m!='view')try{navigator.wakeLock.request('screen').then(l=>wl=l).catch(()=>{})}catch(e){}else if(wl){wl.release();wl=null}}
+function blank(v,quiet){B.classList.toggle('blank',v==null?!B.classList.contains('blank'):!!v);if(!quiet)send({t:'blank',v:B.classList.contains('blank')})}
+/* ---- زمان‌سنج ---- */
+function tick(){const s=((run?Date.now()-st:0)+el)/1000|0;$('#tm').textContent=[s/3600|0,s/60%60|0,s%60].map(v=>String(v).padStart(2,'0')).join(':');$('#clk').textContent=new Date().toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})}
+$('#tp').onclick=()=>{if(run){el+=Date.now()-st;run=0}else{st=Date.now();run=1}$('#tp use').setAttribute('href',run?'#s-pa':'#s-pl');tick()};
+$('#tr').onclick=()=>{el=0;st=Date.now();tick()};
+/* ---- یادداشت: اندازه و ویرایش ---- */
+function sz(d){nf=Math.max(16,Math.min(64,nf+d));document.documentElement.style.setProperty('--nf',nf+'px');ls('nf2',nf)}
+function edit(on){B.classList.toggle('editing',on);if(on){$('#ta').value=N[n-1]||'';$('#ta').focus()}}
+const cfg=()=>{try{const g=JSON.parse(ls('gh'));return g&&g.token&&g.repo?g:null}catch(e){return null}};
+function setup(){const g=cfg()||{},h=location.hostname,guess=h.endsWith('.github.io')?h.split('.')[0]+'/'+(location.pathname.split('/')[1]||h):'';
+ const repo=prompt('مخزن GitHub (به شکل owner/repo):',g.repo||guess);if(!repo)return;
+ const token=prompt('توکن GitHub (Fine-grained، فقط برای همین مخزن، دسترسی Contents: Read and write). فقط روی همین مرورگر ذخیره می‌شود:',g.token||'');if(!token)return;
+ ls('gh',JSON.stringify({repo:repo.trim(),token:token.trim(),branch:g.branch||'main'}));toast('اتصال GitHub تنظیم شد.')}
+async function ghSave(c){
+ const u=`https://api.github.com/repos/${c.repo}/contents/presentation/notes.json`,h={Authorization:'Bearer '+c.token,Accept:'application/vnd.github+json'};
+ let sha,cur={};const r=await fetch(u+'?ref='+c.branch,{headers:h,cache:'no-store'});
+ if(r.ok){const j=await r.json();sha=j.sha;try{cur=JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\s/g,'')))))}catch(e){}}else if(r.status!=404)throw Error(r.status);
+ const content=btoa(unescape(encodeURIComponent(JSON.stringify({...cur,...ov},null,1))));
+ const p=await fetch(u,{method:'PUT',headers:h,body:JSON.stringify({message:'Update speaker notes',branch:c.branch,sha,content})});
+ if(!p.ok)throw Error(p.status)}
+async function save(){const v=$('#ta').value;N[n-1]=v;ov[n]=v;ls('ov:'+M.title,JSON.stringify(ov));edit(0);showNotes();
+ const c=cfg();if(!c)return toast('ذخیره شد (فقط روی این مرورگر). برای ذخیره‌ی دائمی روی ⚙ بزنید.');
+ toast('در حال ذخیره در GitHub…');
+ try{await ghSave(c);toast('در GitHub ذخیره شد؛ سایت تا چند دقیقه‌ی دیگر بازسازی می‌شود.')}catch(e){toast('خطا در ذخیره در GitHub: '+e.message)}}
+$('#ed').onclick=()=>edit(1);$('#cn').onclick=()=>edit(0);$('#sv').onclick=save;$('#gh').onclick=setup;
+/* ---- تمام‌صفحه‌ی اسلاید ---- */
+const E=document.documentElement,rq=E.requestFullscreen||E.webkitRequestFullscreen,inFS=()=>document.fullscreenElement||document.webkitFullscreenElement;
+function fs(){const aud=B.dataset.mode=='audience';
+ if(inFS()){(document.exitFullscreen||document.webkitExitFullscreen).call(document);if(!aud)B.classList.remove('fs');return}
+ if(B.classList.contains('fs')&&!aud){B.classList.remove('fs');return}
+ B.classList.add('fs');if(rq)try{Promise.resolve(rq.call(E)).catch(()=>{})}catch(e){}}
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{if(!inFS()&&B.dataset.mode!='audience')B.classList.remove('fs')}));
 function dr(o){$('#dr').classList.toggle('open',o==null?!$('#dr').classList.contains('open'):!!o)}
-const E=document.documentElement,api=E.requestFullscreen||E.webkitRequestFullscreen,inFS=()=>document.fullscreenElement||document.webkitFullscreenElement;
-function fs(){
- if(B.classList.contains('immersive')){B.classList.remove('immersive');if(inFS())(document.exitFullscreen||document.webkitExitFullscreen).call(document)}
- else{B.classList.add('immersive');if(api)try{Promise.resolve(api.call(E)).catch(()=>{})}catch(e){}}
-}
-['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>B.classList.toggle('immersive',!!inFS())));
-$('#prev').onclick=()=>go(n-1);$('#next').onclick=()=>go(n+1);
-$('#cur').onclick=()=>B.dataset.mode=='view'&&go(n+1);
-document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
-$('#fs').onclick=fs;$('#gb').onclick=()=>dr();$('#dr').onclick=e=>{if(e.target.id=='dr')dr(0)};
-$('#fm').onclick=()=>sz(-2);$('#fp').onclick=()=>sz(2);$('#tm').onclick=()=>{t0=Date.now();tick()};
+function aw(){window.open(location.pathname+'?mode=audience#'+n,'deck-audience','popup,width=1280,height=720')}
+/* ---- رویدادها ---- */
+$('#prev').onclick=$('#p2').onclick=()=>go(n-1);$('#next').onclick=$('#n2').onclick=()=>go(n+1);
+$('#img').onclick=()=>B.dataset.mode!='present'&&go(n+1);
+$$('[data-m]').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+$('#fs').onclick=fs;$('#x2').onclick=fs;$('#gb').onclick=()=>dr();$('#aw').onclick=aw;$('#ex').onclick=()=>setMode('view');
+$('#dr').onclick=e=>{if(e.target.id=='dr')dr(0)};
+$('#fm').onclick=()=>sz(-2);$('#fp').onclick=()=>sz(2);
 addEventListener('keydown',e=>{if(!M||e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key;
+ if(/^(TEXTAREA|INPUT)$/.test(e.target.tagName)){if(k=='Escape')edit(0);return}
  if(['ArrowRight','ArrowDown','PageDown',' ','Enter'].includes(k)){e.preventDefault();go(n+1)}
  else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(k)){e.preventDefault();go(n-1)}
  else if(k=='Home')go(1);else if(k=='End')go(M.count);
- else if(k=='Escape'){if($('#dr').classList.contains('open'))dr(0);else if(B.classList.contains('immersive'))fs()}
- else if(/^f$/i.test(k))fs();else if(/^g$/i.test(k))dr();
- else if(/^p$/i.test(k))setMode(B.dataset.mode=='present'?'view':'present')});
-let sx,sy;const st=$('#stage');
-st.addEventListener('touchstart',e=>{if(e.target.closest('#notes'))return sx=null;sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
-st.addEventListener('touchend',e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
- if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3){go(n+(dx<0?1:-1))}sx=null});
+ else if(k=='Escape'){if($('#dr').classList.contains('open'))dr(0);else if(B.classList.contains('fs')&&B.dataset.mode!='audience')fs()}
+ else if(/^f$/i.test(k))fs();else if(/^g$/i.test(k))dr();else if(/^b$/i.test(k))blank();else if(/^o$/i.test(k))aw();
+ else if(/^p$/i.test(k)&&B.dataset.mode!='audience')setMode(B.dataset.mode=='present'?'view':'present')});
+let sx,sy;
+$('#stage').addEventListener('touchstart',e=>{if(e.target.closest('#notes,#ta,#rail'))return sx=null;sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+$('#stage').addEventListener('touchend',e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+ if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3)go(n+(dx<0?1:-1));sx=null});
 let it;const wake=()=>{B.classList.add('ui');clearTimeout(it);it=setTimeout(()=>B.classList.remove('ui'),2600)};
-['pointermove','pointerdown','keydown'].forEach(v=>addEventListener(v,wake));wake();
+['pointermove','pointerdown','keydown','touchstart'].forEach(v=>addEventListener(v,wake,{passive:true}));wake();
 </script></body></html>
