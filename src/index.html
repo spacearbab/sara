@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0f24"><meta name="apple-mobile-web-app-capable" content="yes">
+<title>ارائه</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--gb:rgba(255,255,255,.26);--tx:#f3f6ff;--mu:#a9b4dc;--ac:#8fb0ff;--ar:16/9;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font:15px/1.7 Vazirmatn,system-ui,-apple-system,sans-serif;color:var(--tx);background:#0a0f24;overflow:hidden;overscroll-behavior:none}
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden}
+.bg i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:f 24s ease-in-out infinite alternate}
+.bg i:nth-child(1){width:55vmax;height:55vmax;background:#3d5cff;top:-18vmax;right:-12vmax}
+.bg i:nth-child(2){width:46vmax;height:46vmax;background:#c04dff;bottom:-18vmax;left:-12vmax;animation-delay:-9s}
+.bg i:nth-child(3){width:30vmax;height:30vmax;background:#00d7c6;top:38%;left:34%;opacity:.28;animation-delay:-15s}
+@keyframes f{to{transform:translate(7vmax,-5vmax) scale(1.15)}}
+.glass{background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.05));border:1px solid var(--gb);backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);box-shadow:0 10px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.4),inset 0 -1px 0 rgba(255,255,255,.08);border-radius:24px}
+button{font:inherit;color:inherit;cursor:pointer;border:0;transition:transform .2s,filter .2s,opacity .2s,background .25s}
+button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.btn{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;flex:none}
+.btn:hover:not(:disabled){filter:brightness(1.3);transform:translateY(-1px)}
+.btn:active:not(:disabled){transform:scale(.92)}
+.btn:disabled{opacity:.35;cursor:default}
+.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#app{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:12px;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+.top{display:flex;align-items:center;gap:10px;padding:8px 16px}
+#ttl{flex:1;min-width:0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg{display:flex;padding:3px;gap:2px;border-radius:999px;background:rgba(0,0,0,.28)}
+.seg button{padding:4px 14px;min-height:38px;border-radius:999px;background:none;color:var(--mu)}
+.seg button[aria-pressed=true]{color:#fff;background:linear-gradient(135deg,rgba(143,176,255,.55),rgba(192,77,255,.4));box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 4px 14px rgba(70,90,255,.35)}
+#stage{min-height:0;display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.cur{display:flex;align-items:center;justify-content:center;min-height:0;min-width:0}
+.cur img{max-width:100%;max-height:100%;width:auto;height:auto;aspect-ratio:var(--ar);border-radius:16px;border:1px solid var(--gb);box-shadow:0 24px 70px rgba(0,0,0,.55);background:#fff;user-select:none;-webkit-user-drag:none}
+.cur img.in{animation:in .35s ease-out}
+@keyframes in{from{opacity:.2;transform:scale(.985)}}
+.side{display:none;min-height:0;flex-direction:column;gap:12px}
+[data-mode=present] #stage{grid-template-columns:minmax(0,1.7fr) minmax(300px,1fr)}
+[data-mode=present] .side{display:flex}
+.pn{padding:12px 14px}
+.next{display:flex;flex-direction:column;gap:8px;color:var(--mu);font-size:13px}
+.next img,#end{width:100%;aspect-ratio:var(--ar);border-radius:10px;object-fit:contain;background:#fff}
+#end{display:grid;place-items:center;background:rgba(0,0,0,.35);color:var(--mu)}
+.nb{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px}
+#notes{flex:1;overflow:auto;white-space:pre-wrap;font-size:var(--nf,20px);line-height:1.9;overscroll-behavior:contain}
+#notes.empty{color:var(--mu);font-size:14px}
+.tl{display:flex;align-items:center;gap:8px;color:var(--mu);font-size:13px}
+#tm{margin-inline-end:auto;font:500 18px/1 ui-monospace,Menlo,monospace;color:var(--tx);background:none;padding:6px;direction:ltr}
+.sm{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.1)}
+.dock{display:flex;align-items:center;gap:12px;padding:10px 14px;justify-self:center;width:min(620px,100%);direction:ltr}
+.mid{flex:1;text-align:center;font-weight:500;font-size:14px}
+.trk{height:5px;border-radius:9px;background:rgba(255,255,255,.18);margin-top:6px;overflow:hidden}
+#bar{height:100%;width:0;border-radius:9px;background:linear-gradient(90deg,#8fb0ff,#d28bff);transition:width .35s}
+#dr{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:rgba(5,8,22,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .3s}
+#dr.open{opacity:1;pointer-events:auto}
+#dr .p{width:min(1000px,94vw);max-height:84vh;overflow:auto;padding:16px;transform:scale(.96);transition:transform .3s}
+#dr.open .p{transform:none}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.th{position:relative;padding:0;border-radius:12px;overflow:hidden;background:#000;border:2px solid transparent;aspect-ratio:var(--ar)}
+.th:hover{transform:scale(1.03)}
+.th img{width:100%;height:100%;object-fit:cover;display:block}
+.th span{position:absolute;bottom:6px;inset-inline-start:6px;padding:0 8px;font-size:12px;border-radius:8px;background:rgba(0,0,0,.55)}
+.th.on{border-color:var(--ac)}
+#err{position:fixed;inset:0;display:grid;place-items:center;padding:20px}
+#err div{max-width:460px;padding:28px;text-align:center}
+body.immersive #app{padding:0;gap:0}
+body.immersive .cur img{border:0;border-radius:0;box-shadow:none}
+body.immersive:not([data-mode=present]) .cur img{background:#000}
+body.immersive .top,body.immersive .dock{position:fixed;z-index:10;opacity:0;pointer-events:none;transition:opacity .3s}
+body.immersive .top{top:max(10px,env(safe-area-inset-top));inset-inline:12px}
+body.immersive .dock{bottom:max(10px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(620px,94vw)}
+body.immersive.ui .top,body.immersive.ui .dock{opacity:1;pointer-events:auto}
+body.immersive:not(.ui){cursor:none}
+@media(max-width:860px) and (orientation:portrait){
+ [data-mode=present] #stage{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,34%) minmax(0,1fr)}
+ .next{flex-direction:row;align-items:center}.next img,#end{width:38%}
+ .seg button{padding:4px 10px;font-size:13px}.top{padding:8px 10px}
+}
+@media(max-height:520px){.top{padding:4px 12px}.btn{width:40px;height:40px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head>
+<body data-mode="view">
+<div class="bg"><i></i><i></i><i></i></div>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="pv" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="nx" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+<symbol id="gr" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></symbol>
+<symbol id="fs" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+</defs></svg>
+<div id="app">
+ <header class="top glass">
+  <b id="ttl"></b>
+  <div class="seg" role="group" aria-label="حالت نمایش">
+   <button data-m="view" aria-pressed="true">نمایش</button>
+   <button data-m="present" aria-pressed="false">ارائه‌دهنده</button>
+  </div>
+  <button class="btn glass" id="gb" title="فهرست اسلایدها (G)" aria-label="فهرست اسلایدها"><svg class="i"><use href="#gr"/></svg></button>
+  <button class="btn glass" id="fs" title="تمام‌صفحه (F)" aria-label="تمام‌صفحه"><svg class="i"><use href="#fs"/></svg></button>
+ </header>
+ <main id="stage">
+  <div class="cur"><img id="cur" alt="اسلاید فعلی" draggable="false"></div>
+  <aside class="side">
+   <div class="pn glass next"><span>اسلاید بعدی</span><img id="nxt" alt="اسلاید بعدی"><div id="end" hidden>پایان ارائه</div></div>
+   <div class="pn glass nb">
+    <div class="tl"><button id="tm" title="بازنشانی زمان‌سنج">00:00:00</button><span>یادداشت‌ها</span>
+     <button class="sm" id="fm" aria-label="کوچک‌تر">A-</button><button class="sm" id="fp" aria-label="بزرگ‌تر">A+</button></div>
+    <div id="notes" dir="auto"></div>
+   </div>
+  </aside>
+ </main>
+ <footer class="dock glass">
+  <button class="btn glass" id="prev" aria-label="اسلاید قبلی"><svg class="i"><use href="#pv"/></svg></button>
+  <div class="mid"><span id="cnt"></span><div class="trk"><div id="bar"></div></div></div>
+  <button class="btn glass" id="next" aria-label="اسلاید بعدی"><svg class="i"><use href="#nx"/></svg></button>
+ </footer>
+</div>
+<div id="dr"><div class="p glass"><div id="grid"></div></div></div>
+<div id="err" hidden><div class="glass"><h2>ارائه پیدا نشد</h2><p>فایل .pptx را در پوشه <code>presentation/</code> قرار دهید و Push کنید تا GitHub Actions اسلایدها را بسازد.</p></div></div>
+<script>
+const $=s=>document.querySelector(s),B=document.body,fa=x=>Number(x).toLocaleString('fa-IR');
+let M,n=1,t0=0,nf=+(localStorage.getItem('nf')||20);
+const cl=i=>Math.max(1,Math.min(M.count,i|0));
+fetch('slides/manifest.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw 0;return r.json()}).then(init).catch(()=>{$('#err').hidden=false;$('#app').hidden=true});
+function init(m){
+ M=m;document.title=m.title;$('#ttl').textContent=m.title;
+ document.documentElement.style.setProperty('--ar',m.w+'/'+m.h);
+ $('#grid').innerHTML=Array.from({length:m.count},(_,i)=>`<button class="th" data-i="${i+1}"><img loading="lazy" src="slides/${i+1}.jpg" alt=""><span>${fa(i+1)}</span></button>`).join('');
+ document.querySelectorAll('.th').forEach(b=>b.onclick=()=>{go(+b.dataset.i);dr(0)});
+ sz(0);setMode(new URLSearchParams(location.search).get('mode')=='present'?'present':'view');go(parseInt(location.hash.slice(1))||1);
+}
+function go(i){
+ if(!M)return;n=cl(i);const c=$('#cur');c.src=`slides/${n}.jpg`;c.classList.remove('in');void c.offsetWidth;c.classList.add('in');
+ const x=$('#nxt'),last=n==M.count;x.hidden=last;$('#end').hidden=!last;if(!last)x.src=`slides/${n+1}.jpg`;
+ const t=(M.notes[n-1]||'').trim(),nb=$('#notes');nb.textContent=t||'برای این اسلاید یادداشتی ثبت نشده است.';nb.classList.toggle('empty',!t);nb.scrollTop=0;
+ $('#cnt').textContent=fa(n)+' / '+fa(M.count);$('#bar').style.width=n/M.count*100+'%';
+ $('#prev').disabled=n==1;$('#next').disabled=last;
+ document.querySelectorAll('.th').forEach(e=>e.classList.toggle('on',+e.dataset.i==n));
+ history.replaceState(null,'','#'+n);new Image().src=`slides/${Math.min(n+1,M.count)}.jpg`;
+}
+function setMode(m){B.dataset.mode=m;document.querySelectorAll('[data-m]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m==m));
+ if(m=='present'&&!t0){t0=Date.now();setInterval(tick,1000)}}
+function tick(){const s=(Date.now()-t0)/1000|0;$('#tm').textContent=[s/3600|0,s/60%60|0,s%60].map(v=>String(v).padStart(2,'0')).join(':')}
+function sz(d){nf=Math.max(14,Math.min(48,nf+d));document.documentElement.style.setProperty('--nf',nf+'px');try{localStorage.setItem('nf',nf)}catch(e){}}
+function dr(o){$('#dr').classList.toggle('open',o==null?!$('#dr').classList.contains('open'):!!o)}
+const E=document.documentElement,api=E.requestFullscreen||E.webkitRequestFullscreen,inFS=()=>document.fullscreenElement||document.webkitFullscreenElement;
+function fs(){
+ if(B.classList.contains('immersive')){B.classList.remove('immersive');if(inFS())(document.exitFullscreen||document.webkitExitFullscreen).call(document)}
+ else{B.classList.add('immersive');if(api)try{Promise.resolve(api.call(E)).catch(()=>{})}catch(e){}}
+}
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>B.classList.toggle('immersive',!!inFS())));
+$('#prev').onclick=()=>go(n-1);$('#next').onclick=()=>go(n+1);
+$('#cur').onclick=()=>B.dataset.mode=='view'&&go(n+1);
+document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+$('#fs').onclick=fs;$('#gb').onclick=()=>dr();$('#dr').onclick=e=>{if(e.target.id=='dr')dr(0)};
+$('#fm').onclick=()=>sz(-2);$('#fp').onclick=()=>sz(2);$('#tm').onclick=()=>{t0=Date.now();tick()};
+addEventListener('keydown',e=>{if(!M||e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key;
+ if(['ArrowRight','ArrowDown','PageDown',' ','Enter'].includes(k)){e.preventDefault();go(n+1)}
+ else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(k)){e.preventDefault();go(n-1)}
+ else if(k=='Home')go(1);else if(k=='End')go(M.count);
+ else if(k=='Escape'){if($('#dr').classList.contains('open'))dr(0);else if(B.classList.contains('immersive'))fs()}
+ else if(/^f$/i.test(k))fs();else if(/^g$/i.test(k))dr();
+ else if(/^p$/i.test(k))setMode(B.dataset.mode=='present'?'view':'present')});
+let sx,sy;const st=$('#stage');
+st.addEventListener('touchstart',e=>{if(e.target.closest('#notes'))return sx=null;sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+st.addEventListener('touchend',e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+ if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3){go(n+(dx<0?1:-1))}sx=null});
+let it;const wake=()=>{B.classList.add('ui');clearTimeout(it);it=setTimeout(()=>B.classList.remove('ui'),2600)};
+['pointermove','pointerdown','keydown'].forEach(v=>addEventListener(v,wake));wake();
+</script></body></html>
