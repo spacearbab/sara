@@ -267,10 +267,12 @@ const ID=Math.random().toString(36).slice(2),CH='deck-sync',bc=window.BroadcastC
 const cl=i=>Math.max(1,Math.min(M.count,i|0));
 const toast=(t,ms=4200)=>{const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),ms)};
 /* ---- هماهنگی بین پنجره‌ها ---- */
+let tth=0;const thr=m=>{const t=Date.now();if(t-tth>25){tth=t;send(m)}};
 const send=m=>{m.id=ID;bc?bc.postMessage(m):ls(CH,JSON.stringify({...m,r:Math.random()}))};
 function recv(m){if(!M||m.id==ID)return;
  if(m.t=='go')go(m.n,1);else if(m.t=='blank')blank(m.v,1);
- else if(m.t=='ptr')ptr(m.x,m.y);else if(m.t=='ask'&&B.dataset.mode!='audience'){send({t:'go',n});send({t:'blank',v:B.classList.contains('blank')})}}
+ else if(m.t=='ptr')ptr(m.x,m.y);else if(m.t=='tr')trn(m.v,1);else if(m.t=='mag')mgR(m);else if(m.t=='tilt')tltR(m);
+  else if(m.t=='ask'&&B.dataset.mode!='audience'){send({t:'go',n});send({t:'blank',v:B.classList.contains('blank')});send({t:'tr',v:+B.dataset.tr})}}
 bc?bc.onmessage=e=>recv(e.data):addEventListener('storage',e=>{if(e.key==CH&&e.newValue)recv(JSON.parse(e.newValue))});
 /* ---- شروع ---- */
 const boot=()=>{$('#lock').hidden=true;$('#app').hidden=false;fetch('slides/manifest.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw 0;return r.json()}).then(init).catch(()=>{$('#err').hidden=false;$('#app').hidden=true})};
@@ -377,20 +379,24 @@ $('#img').onload=ambient;
 // ۲) لیزر هماهنگ با صفحه‌ی استریم
 let lz=0,lzt;const lzE=document.createElement('div');lzE.id='lz';document.body.appendChild(lzE);
 function ptr(x,y){const r=$('#img').getBoundingClientRect();lzE.style.left=r.left+x*r.width+'px';lzE.style.top=r.top+y*r.height+'px';lzE.classList.add('on');clearTimeout(lzt);lzt=setTimeout(()=>lzE.classList.remove('on'),1800)}
-function lzr(){lz=!lz;B.classList.toggle('lz',lz);B.classList.remove('zm');mgE.style.display='none';toast(lz?'لیزر روشن؛ ماوس را روی اسلاید حرکت بده':'لیزر خاموش',2200)}
+function lzr(){lz=!lz;B.classList.toggle('lz',lz);B.classList.remove('zm');mgE.style.display='none';send({t:'mag',off:1});toast(lz?'لیزر روشن؛ ماوس را روی اسلاید حرکت بده':'لیزر خاموش',2200)}
 // ۳) ذره‌بین
 const mgE=document.createElement('div');mgE.id='mgl';document.body.appendChild(mgE);
-function zmt(){B.classList.toggle('zm');lz=0;B.classList.remove('lz');mgE.style.display='none';toast(B.classList.contains('zm')?'ذره‌بین ۲٫۵× روشن':'ذره‌بین خاموش',2000)}
-function mag(e){const im=$('#img'),r=im.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom){mgE.style.display='none';return}
- const z=2.5,x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;Object.assign(mgE.style,{display:'block',left:e.clientX+'px',top:e.clientY+'px',backgroundImage:`url(${im.src})`,backgroundSize:`${r.width*z}px ${r.height*z}px`,backgroundPosition:`${110-x*r.width*z}px ${110-y*r.height*z}px`})}
+function zmt(){B.classList.toggle('zm');lz=0;B.classList.remove('lz');mgE.style.display='none';send({t:'mag',off:1});toast(B.classList.contains('zm')?'ذره‌بین ۲٫۵× روشن':'ذره‌بین خاموش',2000)}
+function lens(r,x,y,cx,cy){const z=2.5;Object.assign(mgE.style,{display:'block',left:cx+'px',top:cy+'px',backgroundImage:`url(${$('#img').src})`,backgroundSize:`${r.width*z}px ${r.height*z}px`,backgroundPosition:`${110-x*r.width*z}px ${110-y*r.height*z}px`})}
+function mag(e){const r=$('#img').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom){mgE.style.display='none';thr({t:'mag',off:1});return}
+ const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;lens(r,x,y,e.clientX,e.clientY);thr({t:'mag',x,y})}
+function mgR(m){if(m.off){mgE.style.display='none';return}const r=$('#img').getBoundingClientRect();lens(r,m.x,m.y,r.left+m.x*r.width,r.top+m.y*r.height)}
+function tlt(a,b){$('#img').style.transform=`perspective(1100px) rotateY(${(a-.5)*7}deg) rotateX(${-(b-.5)*7}deg)`}
+function tltR(m){if(m.off)$('#img').style.transform='';else tlt(m.a,m.b)}
 // ۴) انتقال‌های سینمایی و تیلت سه‌بعدی
 const TR=['محو','لغزش','زوم و محو','چرخش سه‌بعدی'];
-function trn(v){const t=v??((+B.dataset.tr+1)%4);B.dataset.tr=t;ls('tr',t);if(v==null)toast('انتقال: '+TR[t],1800)}trn(+ls('tr')||0);
+function trn(v,q){const t=v??((+B.dataset.tr+1)%4);B.dataset.tr=t;ls('tr',t);if(v==null)toast('انتقال: '+TR[t],1800);if(!q)send({t:'tr',v:t})}trn(+ls('tr')||0,1);
 $('#cur').addEventListener('pointermove',e=>{const im=$('#img'),r=im.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
  if(lz){if(x>=0&&x<=1&&y>=0&&y<=1){ptr(x,y);send({t:'ptr',x,y})}}
  else if(B.classList.contains('zm'))mag(e);
- else if(B.dataset.mode=='view'&&!B.classList.contains('fs')){const c=$('#cur').getBoundingClientRect();im.style.transform=`perspective(1100px) rotateY(${((e.clientX-c.left)/c.width-.5)*7}deg) rotateX(${-((e.clientY-c.top)/c.height-.5)*7}deg)`}});
-$('#cur').addEventListener('pointerleave',()=>{$('#img').style.transform='';mgE.style.display='none'});
+ else if(B.dataset.mode!='audience'){const c=$('#cur').getBoundingClientRect(),a=(e.clientX-c.left)/c.width,b=(e.clientY-c.top)/c.height;tlt(a,b);thr({t:'tilt',a,b})}});
+$('#cur').addEventListener('pointerleave',()=>{if(B.dataset.mode=='audience')return;$('#img').style.transform='';mgE.style.display='none';send({t:'tilt',off:1});send({t:'mag',off:1})});
 // ۵) جست‌وجوی سریع
 function cpr(){const q=$('#cq').value.trim().toLowerCase(),L=[];for(let i=1;i<=M.count;i++){const t=N[i-1]||'';if(!q||String(i)==q||t.toLowerCase().includes(q))L.push(i)}
  $('#cl').innerHTML=L.map((i,j)=>`<button data-i="${i}" class="${j?'':'sel'}"><img loading="lazy" src="${SRC(i)}" alt=""><span>${fa(i)} · ${(N[i-1]||'').replace(/\s+/g,' ').slice(0,70)}</span></button>`).join('')||'<p>نتیجه‌ای پیدا نشد</p>'}
