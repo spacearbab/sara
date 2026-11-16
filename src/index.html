@@ -133,6 +133,9 @@ body.fs .dock{display:none}
  [data-mode=present] #stage{grid-template-rows:minmax(0,1fr) 70px}
  [data-mode=present] #notes,[data-mode=present] #ta{font-size:calc(var(--nf)*.75)}
 }
+.xo{display:none}body.nx .xo{display:grid}
+body.nx:not([data-mode=audience]) .nbx{display:flex;position:fixed;inset:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));z-index:35;background:rgba(20,13,9,.94);padding:18px 24px}
+body.nx #notes,body.nx #ta{font-size:calc(var(--nf)*1.2)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head>
 <body data-mode="view">
@@ -149,6 +152,7 @@ body.fs .dock{display:none}
 <symbol id="s-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
 <symbol id="s-ex" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/></symbol>
 <symbol id="s-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 9.5V20h5v-6h4v6h5V9.5"/></symbol>
+<symbol id="s-xp" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></symbol>
 </defs></svg>
 <div id="app">
  <header class="top glass">
@@ -179,6 +183,8 @@ body.fs .dock{display:none}
   </section>
   <aside class="nbx glass">
    <div class="tl"><b>یادداشت‌های اسپیکر</b>
+    <button class="sm xo" id="p3" aria-label="قبلی"><svg class="i"><use href="#s-pv"/></svg></button><span class="xo" id="c3"></span><button class="sm xo" id="n3" aria-label="بعدی"><svg class="i"><use href="#s-nx"/></svg></button>
+    <button class="sm" id="xp" title="بزرگ‌کردن یادداشت (E)" aria-label="بزرگ‌کردن یادداشت"><svg class="i"><use href="#s-xp"/></svg></button>
     <button class="sm ne" id="gh" title="اتصال به GitHub برای ذخیره‌ی دائمی" aria-label="تنظیم GitHub">⚙</button>
     <button class="sm ne" id="ed" title="ویرایش یادداشت" aria-label="ویرایش یادداشت"><svg class="i"><use href="#s-ed"/></svg></button>
     <button class="pill go ea" id="sv">ذخیره</button><button class="pill ea" id="cn">انصراف</button>
@@ -196,7 +202,7 @@ body.fs .dock{display:none}
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],B=document.body,fa=x=>Number(x).toLocaleString('fa-IR');
 const ls=(k,v)=>{try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){return null}};
-let M,n=1,N=[],pend={},run=0,el=0,st=0,wl,tt,nf=+ls('nf2')||28,jb='',jt;
+let M,n=1,N=[],pend={},sent={},run=0,el=0,st=0,wl,tt,nf=+ls('nf2')||28,jb='',jt;
 const PH='__PH__',SRC=i=>`slides/${i}.jpg?v=${M.v||0}`;
 const ID=Math.random().toString(36).slice(2),CH='deck-sync',bc=window.BroadcastChannel?new BroadcastChannel(CH):null;
 const cl=i=>Math.max(1,Math.min(M.count,i|0));
@@ -215,11 +221,13 @@ $('#lf').onsubmit=async e=>{e.preventDefault();const pw=$('#pw').value.trim().re
  try{h=await hx('sara|'+pw)}catch(x){$('#le').textContent='برای ورود، سایت باید با https باز شود.';return}
  if(h==PH){ls('ok',PH);boot()}else{$('#le').textContent='رمز اشتباه است';const f=$('#lf');f.classList.remove('shake');void f.offsetWidth;f.classList.add('shake');$('#pw').value='';$('#pw').focus()}};
 function init(m){
- M=m;document.title=m.title;$('#ttl').textContent=m.title;
+ M=m;if(m.api)$('#gh').hidden=true;document.title=m.title;$('#ttl').textContent=m.title;
  document.documentElement.style.setProperty('--ar',m.w+'/'+m.h);
  try{pend=JSON.parse(ls('pend:'+m.title)||'{}')}catch(e){pend={}}
  for(const k in pend)if((m.notes[k-1]||'')==pend[k])delete pend[k];
- N=m.notes.map((t,i)=>pend[i+1]??t);
+ try{sent=JSON.parse(ls('sent:'+m.title)||'{}')}catch(e){sent={}}
+ for(const k in sent)if((m.notes[k-1]||'')===sent[k].v||Date.now()-sent[k].t>6e5)delete sent[k];
+ N=m.notes.map((t,i)=>pend[i+1]??sent[i+1]?.v??t);
  const h=Array.from({length:m.count},(_,i)=>`<button class="th" data-i="${i+1}"><img loading="lazy" src="${SRC(i+1)}" alt=""><span>${fa(i+1)}</span></button>`).join('');
  $('#rail').innerHTML=h;$('#grid').innerHTML=h;
  $$('.th').forEach(b=>b.onclick=()=>{go(+b.dataset.i);dr(0)});
@@ -230,8 +238,8 @@ function init(m){
 function go(i,quiet){
  if(!M)return;n=cl(i);const c=$('#img');c.src=SRC(n);c.classList.remove('in');void c.offsetWidth;c.classList.add('in');
  if(!$('body.editing'))showNotes();else edit(0);
- $('#cnt').textContent=$('#c2').textContent=fa(n)+' / '+fa(M.count);$('#bar').style.width=n/M.count*100+'%';
- $('#prev').disabled=$('#p2').disabled=n==1;$('#next').disabled=$('#n2').disabled=n==M.count;
+ $('#cnt').textContent=$('#c2').textContent=$('#c3').textContent=fa(n)+' / '+fa(M.count);$('#bar').style.width=n/M.count*100+'%';
+ $('#prev').disabled=$('#p2').disabled=$('#p3').disabled=n==1;$('#next').disabled=$('#n2').disabled=$('#n3').disabled=n==M.count;
  $$('.th').forEach(e=>{const on=+e.dataset.i==n;e.classList.toggle('on',on);if(on&&e.closest('#rail'))e.scrollIntoView({block:'nearest',inline:'center'})});
  history.replaceState(null,'',location.search+'#'+n);new Image().src=SRC(Math.min(n+1,M.count));
  if(!quiet)send({t:'go',n});
@@ -250,7 +258,8 @@ $('#tr').onclick=()=>{el=0;st=Date.now();tick()};
 function sz(d){nf=Math.max(16,Math.min(64,nf+d));document.documentElement.style.setProperty('--nf',nf+'px');ls('nf2',nf)}
 function edit(on){B.classList.toggle('editing',on);if(on){$('#ta').value=N[n-1]||'';$('#ta').focus()}}
 const cfg=()=>{try{const g=JSON.parse(ls('gh'));return g&&g.token&&g.repo?g:null}catch(e){return null}};
-const savePend=()=>ls('pend:'+M.title,JSON.stringify(pend));
+const savePend=()=>{ls('pend:'+M.title,JSON.stringify(pend));ls('sent:'+M.title,JSON.stringify(sent))};
+const markSent=()=>{for(const k in pend)sent[k]={v:pend[k],t:Date.now()};pend={};savePend()};
 const guess=()=>{const h=location.hostname;return M.repo||(h.endsWith('.github.io')?h.split('.')[0]+'/'+(location.pathname.split('/')[1]||h):'')};
 function setup(){const g=cfg()||{};$('#cr').value=g.repo||guess();$('#ct').value=g.token||'';$('#ce').textContent='';$('#cfg').hidden=false;$('#ct').focus()}
 $('#cc').onclick=()=>$('#cfg').hidden=true;
@@ -258,7 +267,7 @@ $('#cs').onclick=async()=>{const repo=$('#cr').value.trim(),token=$('#ct').value
  e.textContent='در حال بررسی…';
  try{const r=await fetch('https://api.github.com/repos/'+repo,{headers:{Authorization:'Bearer '+token}});if(!r.ok)throw 0;
   const c={repo,token,branch:M.branch||'main'};ls('gh',JSON.stringify(c));$('#cfg').hidden=true;
-  if(Object.keys(pend).length){try{await ghSave(c);pend={};savePend();toast('✓ متصل شد و تغییرات ذخیره شد.')}catch(x){toast('متصل شد ولی ذخیره ناموفق بود: '+x.message)}}else toast('✓ اتصال برقرار شد.')}
+  if(Object.keys(pend).length){try{await ghSave(c);markSent();toast('✓ متصل شد و تغییرات ذخیره شد.')}catch(x){toast('متصل شد ولی ذخیره ناموفق بود: '+x.message)}}else toast('✓ اتصال برقرار شد.')}
  catch(x){e.textContent='اتصال ناموفق بود؛ نام مخزن یا توکن را بررسی کنید.'}};
 /* یادداشت‌های ذخیره‌شده در GitHub برای همه‌ی دستگاه‌ها (بدون انتظار برای بازسازی سایت) */
 async function live(){const g=cfg(),repo=(g&&g.repo)||M.repo,br=(g&&g.branch)||M.branch||'main';if(!repo)return;
@@ -266,6 +275,7 @@ async function live(){const g=cfg(),repo=(g&&g.repo)||M.repo,br=(g&&g.branch)||M
  for(const u of us){try{const r=await fetch(u,{cache:'no-store',headers:u.includes('api.')?{Accept:'application/vnd.github.raw+json'}:{}});if(!r.ok)continue;const j=await r.json();
   for(const k in j)if(/^\d+$/.test(k)&&+k<=M.count)N[k-1]=j[k];
   for(const k in pend)if(pend[k]===j[k])delete pend[k];
+  for(const k in sent){const e=sent[k];if(j[k]===e.v||Date.now()-e.t>6e5)delete sent[k];else N[k-1]=e.v}
   for(const k in pend)N[k-1]=pend[k];savePend();if(!B.classList.contains('editing'))showNotes();return}catch(e){}}}
 async function ghSave(c){
  const u=`https://api.github.com/repos/${c.repo}/contents/presentation/notes.json`,h={Authorization:'Bearer '+c.token,Accept:'application/vnd.github+json'};
@@ -275,10 +285,11 @@ async function ghSave(c){
   const p=await fetch(u,{method:'PUT',headers:h,body:JSON.stringify({message:'Update speaker notes',branch:c.branch,sha,content})});
   if(p.ok)return;if(p.status!=409&&p.status!=422)throw Error(p.status)}
  throw Error('conflict')}
+async function apiSave(){const r=await fetch(M.api,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({ph:PH,notes:pend})});if(!r.ok)throw Error(r.status+' '+await r.text())}
 async function save(){const v=$('#ta').value;N[n-1]=v;pend[n]=v;savePend();edit(0);showNotes();
- const c=cfg();if(!c){toast('روی این دستگاه ذخیره شد. برای ذخیره‌ی همیشگی GitHub را وصل کنید.');return setup()}
+ const c=M.api?{}:cfg();if(!M.api&&!c){toast('روی این دستگاه ذخیره شد. برای ذخیره‌ی همیشگی GitHub را وصل کنید.');return setup()}
  toast('در حال ذخیره در GitHub…');
- try{await ghSave(c);pend={};savePend();toast('✓ ذخیره شد؛ بقیه‌ی دستگاه‌ها هم به‌زودی یادداشت جدید را می‌بینند.')}catch(e){toast('خطا در ذخیره در GitHub ('+e.message+'). تغییرات روی این دستگاه نگه داشته شد.')}}
+ try{await(M.api?apiSave():ghSave(c));markSent();toast('✓ ذخیره شد؛ بقیه‌ی دستگاه‌ها هم به‌زودی یادداشت جدید را می‌بینند.')}catch(e){toast('خطا در ذخیره در GitHub ('+e.message+'). تغییرات روی این دستگاه نگه داشته شد.')}}
 $('#ed').onclick=()=>edit(1);$('#cn').onclick=()=>edit(0);$('#sv').onclick=save;$('#gh').onclick=setup;
 /* ---- تمام‌صفحه‌ی اسلاید ---- */
 const E=document.documentElement,rq=E.requestFullscreen||E.webkitRequestFullscreen,inFS=()=>document.fullscreenElement||document.webkitFullscreenElement;
@@ -290,7 +301,9 @@ function fs(){const aud=B.dataset.mode=='audience';
 function dr(o){$('#dr').classList.toggle('open',o==null?!$('#dr').classList.contains('open'):!!o)}
 function aw(){window.open(location.pathname+'?mode=audience#'+n,'deck-audience','popup,width=1280,height=720')}
 /* ---- رویدادها ---- */
-$('#prev').onclick=$('#p2').onclick=()=>go(n-1);$('#next').onclick=$('#n2').onclick=()=>go(n+1);
+$('#prev').onclick=$('#p2').onclick=$('#p3').onclick=()=>go(n-1);$('#next').onclick=$('#n2').onclick=$('#n3').onclick=()=>go(n+1);
+function nx(v){B.classList.toggle('nx',v==null?!B.classList.contains('nx'):!!v);$('#xp use').setAttribute('href',B.classList.contains('nx')?'#s-x':'#s-xp')}
+$('#xp').onclick=()=>nx();
 $('#img').onclick=()=>B.dataset.mode=='view'&&go(n+1);
 $$('[data-m]').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
 $('#fs').onclick=fs;$('#x2').onclick=fs;$('#gb').onclick=()=>dr();$('#aw').onclick=aw;$('#ex').onclick=()=>setMode('view');
@@ -303,7 +316,8 @@ addEventListener('keydown',e=>{if(!M||e.ctrlKey||e.metaKey||e.altKey)return;cons
  if(['ArrowRight','ArrowDown','PageDown',' ','Enter'].includes(k)){e.preventDefault();go(n+1)}
  else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(k)){e.preventDefault();go(n-1)}
  else if(k=='Home')go(1);else if(k=='End')go(M.count);
- else if(k=='Escape'){if($('#dr').classList.contains('open'))dr(0);else if(B.classList.contains('fs')&&B.dataset.mode!='audience')fs()}
+ else if(/^e$/i.test(k))nx();
+ else if(k=='Escape'){if(B.classList.contains('nx'))nx(0);else if($('#dr').classList.contains('open'))dr(0);else if(B.classList.contains('fs')&&B.dataset.mode!='audience')fs()}
  else if(/^f$/i.test(k))fs();else if(/^g$/i.test(k))dr();else if(/^b$/i.test(k))blank();else if(/^o$/i.test(k))aw();
  else if(/^p$/i.test(k)&&B.dataset.mode!='audience')setMode(B.dataset.mode=='present'?'view':'present')});
 let sx,sy;
